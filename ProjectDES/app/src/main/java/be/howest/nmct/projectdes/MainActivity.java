@@ -1,17 +1,13 @@
 package be.howest.nmct.projectdes;
 
 import android.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.app.Activity;
-import android.os.Bundle;
 
 
 public class MainActivity extends Activity {
@@ -26,6 +22,8 @@ public class MainActivity extends Activity {
                     .commit();
         }
     }
+
+    //test
 
 
     @Override
