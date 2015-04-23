@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ProjectDES</string>
     <string name="action_settings">Settings</string>
-    <string name="MyLocationButton">Mijn locaties</string>
+    <string name="MyLocations">Mijn locaties</string>
     <string name="MapButton">Map</string>
+    <string name="AddLocationButton">Voeg een locatie toe</string>
 </resources>
