@@ -1,7 +1,9 @@
 package be.howest.nmct.projectdes;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -32,17 +34,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_maps,container,false);
 
-
+        mMap = getMapFragment();
+        mMap.getMapAsync(this);
 
         return v;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    private MapFragment getMapFragment() {
+        FragmentManager fm;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 
-        mMap = (MapFragment) getFragmentManager().findFragmentById(R.id.mMap);
-        mMap.getMapAsync(this);
+            fm = getFragmentManager();
+        } else {
+
+            fm = getChildFragmentManager();
+        }
+        return (MapFragment) fm.findFragmentById(R.id.mMap);
     }
 
     @Override
@@ -50,12 +57,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         LatLng sydney = new LatLng(-33.867, 151.206);
         map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,13));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
 
-     /*   map.addMarker(new MarkerOptions()
+        map.addMarker(new MarkerOptions()
                         .title("")
                         .snippet("")
                         .position(sydney)
-        );*/
+        );
     }
 }
