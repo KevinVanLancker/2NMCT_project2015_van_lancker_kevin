@@ -3,6 +3,7 @@ package be.howest.nmct.projectdes;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -20,9 +25,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by kevin on 18/04/15.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     MapFragment mMap;
+    GoogleMap mGMap;
+    LatLng mCurPos;
+    GoogleApiClient mGoogleApiClient;
+
+
+    public MapsFragment(){
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,14 +70,62 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap map) {
 
+        mGMap = map;
         LatLng sydney = new LatLng(-33.867, 151.206);
         map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
+       // map.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
 
         map.addMarker(new MarkerOptions()
                         .title("")
                         .snippet("")
                         .position(sydney)
         );
+    }
+
+
+    //komt hier niet in
+    @Override
+    public void onLocationChanged(Location l2) {
+        /*CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                new LatLng(l2.getLatitude(), l2.getLongitude()), 15);*/
+
+       // mGMap.animateCamera(cameraUpdate);
+        mCurPos = new LatLng(l2.getLatitude(),l2.getLongitude());
+        mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
+        mGMap.addMarker(new MarkerOptions()
+                .title("Thuis")
+                .snippet("")
+                .position(mCurPos));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

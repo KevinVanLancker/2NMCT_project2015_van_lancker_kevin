@@ -14,6 +14,10 @@ import android.widget.Button;
 public class MyLocationsFragment extends Fragment {
 
     Button btnAddLocation;
+    
+    public MyLocationsFragment(){
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
