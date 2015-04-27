@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -71,16 +72,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap map) {
 
         mGMap = map;
-        LatLng sydney = new LatLng(-33.867, 151.206);
+        //mGMap.setOnMyLocationChangeListener();
         map.setMyLocationEnabled(true);
-       // map.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
-
+       /* Location loc = map.getMyLocation();
+        LatLng home = new LatLng(loc.getLatitude(), loc.getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(home,15));
         map.addMarker(new MarkerOptions()
-                        .title("")
+                        .title("home")
+                        .snippet("")
+                        .position(home)
+        );*/
+
+        //testcode
+        /*LatLng sydney = new LatLng(-33.867, 151.206);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,13));
+        map.addMarker(new MarkerOptions()
+                        .title("home")
                         .snippet("")
                         .position(sydney)
-        );
+        );*/
     }
+
 
 
     //komt hier niet in
