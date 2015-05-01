@@ -14,6 +14,11 @@ import android.widget.Button;
 public class MyLocationsFragment extends Fragment {
 
     Button btnAddLocation;
+
+    public static MyLocationsFragment newInstance(){
+        MyLocationsFragment fragment = new MyLocationsFragment();
+        return fragment;
+    }
     
     public MyLocationsFragment(){
 

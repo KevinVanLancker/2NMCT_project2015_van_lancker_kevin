@@ -1,5 +1,6 @@
 package be.howest.nmct.projectdes;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,19 @@ import android.widget.Button;
 public class MainFragment extends Fragment {
 
     private Button btnMap, btnMyLocations;
+    onChangeFragmentListener i;
+
+    public interface onChangeFragmentListener{
+        public void showFragmentMap();
+        public void showFragmentLocations();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        i = (onChangeFragmentListener) activity;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +44,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //ga naar de mapFragment
+                i.showFragmentMap();
             }
         });
 
@@ -38,6 +53,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //ga naar de locatie fragment
+                i.showFragmentLocations();
             }
         });
 

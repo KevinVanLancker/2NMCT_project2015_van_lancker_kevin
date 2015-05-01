@@ -1,6 +1,7 @@
 package be.howest.nmct.projectdes;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,7 +11,7 @@ import android.view.ViewGroup;
 import android.app.Activity;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements MainFragment.onChangeFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +19,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new MapsFragment())
+                    .add(R.id.container, new MainFragment())
                     .commit();
         }
     }
@@ -43,6 +44,29 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showFragmentMap() {
+        MapsFragment fragment = new MapsFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.container, fragment.newInstance());
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    @Override
+    public void showFragmentLocations() {
+        MyLocationsFragment fragment = new MyLocationsFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.container, fragment.newInstance());
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+
     }
 
     /**
