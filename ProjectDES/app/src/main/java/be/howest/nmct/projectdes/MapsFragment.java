@@ -26,14 +26,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by kevin on 18/04/15.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationChangeListener{
 
     MapFragment mMap;
     GoogleMap mGMap;
     LatLng mCurPos;
-    GoogleApiClient mGoogleApiClient;
 
 
     public MapsFragment(){
@@ -72,37 +69,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap map) {
 
         mGMap = map;
-        //mGMap.setOnMyLocationChangeListener();
+        mGMap.setOnMyLocationChangeListener(this);
         map.setMyLocationEnabled(true);
-       /* Location loc = map.getMyLocation();
-        LatLng home = new LatLng(loc.getLatitude(), loc.getLongitude());
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(home,15));
-        map.addMarker(new MarkerOptions()
-                        .title("home")
-                        .snippet("")
-                        .position(home)
-        );*/
-
-        //testcode
-        /*LatLng sydney = new LatLng(-33.867, 151.206);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,13));
-        map.addMarker(new MarkerOptions()
-                        .title("home")
-                        .snippet("")
-                        .position(sydney)
-        );*/
     }
 
 
-
-    //komt hier niet in
     @Override
-    public void onLocationChanged(Location l2) {
-        /*CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                new LatLng(l2.getLatitude(), l2.getLongitude()), 15);*/
-
-       // mGMap.animateCamera(cameraUpdate);
-        mCurPos = new LatLng(l2.getLatitude(),l2.getLongitude());
+    public void onMyLocationChange(Location loc) {
+        mGMap.clear();
+        mCurPos = new LatLng(loc.getLatitude(),loc.getLongitude());
         mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
         mGMap.addMarker(new MarkerOptions()
                 .title("Thuis")
@@ -110,34 +85,4 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 .position(mCurPos));
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-
-    @Override
-    public void onConnected(Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
 }
