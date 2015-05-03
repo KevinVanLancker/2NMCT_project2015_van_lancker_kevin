@@ -7,7 +7,6 @@ import android.provider.BaseColumns;
  */
 public class Contract {
     public interface SportLocatieColumns extends BaseColumns{
-        public static final String COLUMN_LOCATIE_BENAMING = "locatie_benaming";
         public static final String COLUMN_LOCATIE_ADRES = "locatie_adres";
         public static final String COLUMN_LOCATIE_GEMEENTE = "locatie_gemeente";
         public static final String COLUMN_LOCATIE_SPORT = "locatie_sport";

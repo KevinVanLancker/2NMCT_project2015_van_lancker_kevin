@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -20,11 +22,6 @@ import be.howest.nmct.projectdes.loader.LocationLoader;
 public class LocationsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     LocationAdapter la;
-
-    public static LocationsFragment newInstance(){
-        LocationsFragment fragment = new LocationsFragment();
-        return fragment;
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -51,12 +48,17 @@ public class LocationsFragment extends ListFragment implements LoaderManager.Loa
         la.swapCursor(null);
     }
 
+
+
     class LocationAdapter extends SimpleCursorAdapter {
         public LocationAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to, flags);
         }
 
-
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+        }
     }
 
 }

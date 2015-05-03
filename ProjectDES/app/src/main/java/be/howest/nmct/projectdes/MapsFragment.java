@@ -15,7 +15,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
 
 /**
  * Created by kevin on 18/04/15.
@@ -39,6 +39,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Nullable
@@ -70,7 +71,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         mGMap = map;
         mGMap.setOnMyLocationChangeListener(this);
         map.setMyLocationEnabled(true);
-    }
+
+        }
+
+
 
 
     @Override

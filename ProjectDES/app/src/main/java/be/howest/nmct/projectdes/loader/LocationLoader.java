@@ -14,9 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import be.howest.nmct.projectdes.Location;
 
@@ -27,7 +24,6 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
 
     private Cursor mCursor;
     private static final String url = "http://data.kortrijk.be/sport/outdoorlocaties.json";
-    public List<Location> locations = new ArrayList<>();
 
     private final String[] mColumnNames = new String[]{
             BaseColumns._ID,
@@ -52,6 +48,14 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
         }
     }
 
+    @Override
+    public Cursor loadInBackground() {
+        if(mCursor == null){
+            loadCursor();
+        }
+        return mCursor;
+    }
+
     public void loadCursor(){
         synchronized (lock){
             if(mCursor != null) return;
@@ -69,7 +73,6 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
                 while(reader.hasNext()){
                     reader.beginObject();
                     Location loc = new Location();
-                    loc.id = id;
                     String lat = "";
                     String lng = "";
                     while(reader.hasNext()) {
@@ -108,8 +111,6 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
                     row.add(loc.gemeente);
                     row.add(loc.sport);
                     id++;
-                    locations.add(loc);
-
                     reader.endObject();
                 }
                 reader.endArray();
@@ -119,24 +120,17 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
                 ex.printStackTrace();
             }finally {
                 try{
-                    reader.close();
-                }catch (IOException ex){
+                reader.close();
+                }catch(IOException ex){
                     ex.printStackTrace();
                 }
-                try{
-                    input.close();
-                }catch (IOException ex){
+                try {
+                input.close();
+                }catch(IOException ex){
                     ex.printStackTrace();
                 }
             }
         }
     }
 
-    @Override
-    public Cursor loadInBackground() {
-        if(mCursor == null){
-            loadCursor();
-        }
-        return mCursor;
-    }
 }

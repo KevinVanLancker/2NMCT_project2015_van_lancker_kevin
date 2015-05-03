@@ -8,15 +8,17 @@ import android.view.MenuItem;
 import android.app.Activity;
 
 
-public class MainActivity extends Activity implements MainFragment.onChangeFragmentListener {
+
+public class MainActivity extends Activity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment())
+                    .add(R.id.container, new LocationsFragment())
                     .commit();
         }
     }
@@ -41,28 +43,5 @@ public class MainActivity extends Activity implements MainFragment.onChangeFragm
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void showFragmentMap() {
-        MapsFragment fragment = new MapsFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        transaction.replace(R.id.container, fragment.newInstance());
-        transaction.addToBackStack(null);
-
-        transaction.commit();
-    }
-
-    @Override
-    public void showFragmentLocations() {
-        LocationsFragment fragment = new LocationsFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        transaction.replace(R.id.container, fragment.newInstance());
-        transaction.addToBackStack(null);
-
-        transaction.commit();
-
     }
 }
