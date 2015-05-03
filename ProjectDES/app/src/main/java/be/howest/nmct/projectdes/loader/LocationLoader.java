@@ -29,7 +29,7 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
     private Cursor mCursor;
     private static final String url = "http://data.kortrijk.be/sport/outdoorlocaties.json";
     private List<Location> locs;
-    //json in aparte file methode inlezen en gegevens in een List van locations steken, die list sorteren per sport en dan elke locatie in een row steken
+
 
     private final String[] mColumnNames = new String[]{
             BaseColumns._ID,
