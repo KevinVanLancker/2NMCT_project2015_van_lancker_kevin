@@ -13,7 +13,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/MyLocations"
+        android:text="@string/Locations"
         android:id="@+id/btnMyLocations"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

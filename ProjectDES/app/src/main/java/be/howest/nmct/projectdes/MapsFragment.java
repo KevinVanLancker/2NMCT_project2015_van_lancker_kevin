@@ -78,10 +78,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         mGMap.clear();
         mCurPos = new LatLng(loc.getLatitude(),loc.getLongitude());
         mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
-        mGMap.addMarker(new MarkerOptions()
-                .title("Thuis")
-                .snippet("")
-                .position(mCurPos));
     }
 
 }

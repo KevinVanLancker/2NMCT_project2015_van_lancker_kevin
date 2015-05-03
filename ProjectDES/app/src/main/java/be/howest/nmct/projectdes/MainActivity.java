@@ -1,13 +1,10 @@
 package be.howest.nmct.projectdes;
 
-import android.app.Fragment;
+
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.app.Activity;
 
 
@@ -59,7 +56,7 @@ public class MainActivity extends Activity implements MainFragment.onChangeFragm
 
     @Override
     public void showFragmentLocations() {
-        MyLocationsFragment fragment = new MyLocationsFragment();
+        LocationsFragment fragment = new LocationsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         transaction.replace(R.id.container, fragment.newInstance());
@@ -67,21 +64,5 @@ public class MainActivity extends Activity implements MainFragment.onChangeFragm
 
         transaction.commit();
 
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
     }
 }
