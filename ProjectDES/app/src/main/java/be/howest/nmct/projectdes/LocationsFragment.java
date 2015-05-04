@@ -36,7 +36,7 @@ public class LocationsFragment extends ListFragment implements LoaderManager.Loa
         la = new LocationAdapter(getActivity(),R.layout.row_locaties,null,new String[]{Contract.SportLocatieColumns.COLUMN_LOCATIE_ADRES,Contract.SportLocatieColumns.COLUMN_LOCATIE_GEMEENTE, Contract.SportLocatieColumns.COLUMN_LOCATIE_SPORT },
              new int[]{R.id.tvAdres,R.id.tvGemeente,R.id.tvSport},0);
         setListAdapter(la);
-        getLoaderManager().initLoader(0,null,this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
