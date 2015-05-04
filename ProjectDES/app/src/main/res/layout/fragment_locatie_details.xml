@@ -3,7 +3,6 @@
     android:layout_height="match_parent"
     tools:context="be.howest.nmct.projectdes.LocatieDetailsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
     <TextView
         android:layout_width="wrap_content"
