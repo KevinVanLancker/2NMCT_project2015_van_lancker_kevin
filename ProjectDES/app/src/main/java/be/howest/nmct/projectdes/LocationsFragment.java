@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -22,6 +23,11 @@ import be.howest.nmct.projectdes.loader.LocationLoader;
 public class LocationsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     LocationAdapter la;
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -55,10 +61,10 @@ public class LocationsFragment extends ListFragment implements LoaderManager.Loa
             super(context, layout, c, from, to, flags);
         }
 
-        @Override
+       /* @Override
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
-        }
+        }*/
     }
 
 }
