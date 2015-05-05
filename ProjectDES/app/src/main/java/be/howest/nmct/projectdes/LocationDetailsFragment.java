@@ -1,8 +1,11 @@
 package be.howest.nmct.projectdes;
 
 
+import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,23 +20,34 @@ import be.howest.nmct.projectdes.provider.LocationProvider;
 
 public class LocationDetailsFragment extends Fragment {
 
-
     private Button btnMap;
     private TextView tvBenaming, tvAdres, tvGemeente, tvSoort, tvSport, tvAfmetingen;
     private static final String LOCATIE_ADRES = "be.howest.nmct.projectdes.NEW_LOCATIE_ADRES";
     private static final String LOCATIE_GEMEENTE = "be.howest.nmct.projectdes.NEW_LOCATIE_GEMEENTE";
     private static final String LOCATIE_SPORT = "be.howest.nmct.projectdes.NEW_LOCATIE_SPORT";
     private static Location loc;
+
     private OnDetailsFragmentListener listener;
 
     public interface OnDetailsFragmentListener {
-        void onClickMap(LatLng cor);
+        void onClickMap(LatLng cor, String benaming);
     }
 
 
     public LocationDetailsFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try{
+            listener = (OnDetailsFragmentListener) activity;
+        }catch(ClassCastException ex){
+            throw new ClassCastException(activity.toString() + " must implement OnDetailsFragmentListener");
+        }
+    }
+
 
     public static LocationDetailsFragment newInstance(String adres,String gemeente, String sport){
         LocationDetailsFragment fragment = new LocationDetailsFragment();
@@ -42,10 +56,11 @@ public class LocationDetailsFragment extends Fragment {
         args.putString(LOCATIE_GEMEENTE, gemeente);
         args.putString(LOCATIE_SPORT, sport);
         fragment.setArguments(args);
-        //loc = LocationProvider.getLocation(adres, gemeente, sport);
         return fragment;
 
     }
+
+
 
 
     @Override
@@ -61,25 +76,35 @@ public class LocationDetailsFragment extends Fragment {
         tvSoort = (TextView) v.findViewById(R.id.tvSoort);
         tvSport = (TextView) v.findViewById(R.id.tvSport);
         tvAfmetingen = (TextView) v.findViewById(R.id.tvAfmetingen);
-
-      /*  btnMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onClickMap(loc.pos);
-            }
-        });*/
-        //test
-        tvAdres.setText(getArguments().getString(LOCATIE_ADRES));
-
-        /*tvBenaming.setText(loc.benaming);
-        tvAdres.setText(loc.adres);
-        tvGemeente.setText(loc.gemeente);
-        tvSoort.setText("Dit is een " + loc.soort);
-        tvSport.setText(loc.sport);
-        tvAfmetingen.setText("De afmetingen zijn: " + loc.afmeting);*/
+        new Longtask().execute();
 
 
         return v;
+    }
+
+    private class Longtask extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            loc = LocationProvider.getLocation(getArguments().getString(LOCATIE_ADRES), getArguments().getString(LOCATIE_GEMEENTE), getArguments().getString(LOCATIE_SPORT));
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            tvBenaming.setText(loc.benaming);
+            tvAdres.setText(loc.adres);
+            tvGemeente.setText(loc.gemeente);
+            tvSoort.setText("Dit is een " + loc.soort);
+            tvSport.setText(loc.sport);
+            tvAfmetingen.setText("De afmetingen zijn: " + loc.afmeting);
+            btnMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onClickMap(loc.pos, loc.benaming);
+                }
+            });
+        }
     }
 
 

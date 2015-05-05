@@ -67,9 +67,9 @@ public class LocationProvider {
                             loc.afmeting = reader.nextString();
                         }
                     }else if(name.equals("y")){
-                        lat = reader.nextString();
-                    }else if(name.equals("x")){
                         lng = reader.nextString();
+                    }else if(name.equals("x")){
+                        lat = reader.nextString();
                     }
                     else{
                         reader.skipValue();

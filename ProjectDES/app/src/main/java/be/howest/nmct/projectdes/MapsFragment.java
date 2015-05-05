@@ -14,21 +14,30 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 
 /**
  * Created by kevin on 18/04/15.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationChangeListener{
+public class MapsFragment extends Fragment implements OnMapReadyCallback/*, GoogleMap.OnMyLocationChangeListener*/{
 
-    MapFragment mMap;
-    GoogleMap mGMap;
-    LatLng mCurPos;
+    private MapFragment mMap;
+    /*private GoogleMap mGMap;
+    private LatLng mCurPos;*/
+    private static LatLng mLoc;
+    private static final String LOCATIE_BENAMING = "be.howest.nmct.projectdes.NEW_LOCATIE_BENAMING";
 
 
-    public static MapsFragment newInstance(LatLng cor){
+
+    public static MapsFragment newInstance(LatLng cor, String benaming){
         MapsFragment fragment = new MapsFragment();
+        mLoc = cor;
+        Bundle args = new Bundle();
+        args.putString(LOCATIE_BENAMING, benaming);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -68,22 +77,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onMapReady(GoogleMap map) {
 
-        mGMap = map;
-        mGMap.setOnMyLocationChangeListener(this);
+       // mGMap = map;
+        //mGMap.setOnMyLocationChangeListener(this);
         map.setMyLocationEnabled(true);
         //zet marker op cor met wat basisinfo
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(mLoc, 15));
+        map.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc));
 
         }
 
 
 
 
-    @Override
+    /*@Override
     public void onMyLocationChange(Location loc) {
         //moet maar 1x gebeuren
         mGMap.clear();
         mCurPos = new LatLng(loc.getLatitude(),loc.getLongitude());
         mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
-    }
+    }*/
 
 }

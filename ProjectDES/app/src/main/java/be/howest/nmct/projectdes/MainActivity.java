@@ -60,11 +60,11 @@ public class MainActivity extends Activity implements LocationsFragment.OnLocati
     }
 
     @Override
-    public void onClickMap(LatLng cor) {
+    public void onClickMap(LatLng cor,String benaming) {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        MapsFragment fragment = MapsFragment.newInstance(cor);
+        MapsFragment fragment = MapsFragment.newInstance(cor, benaming);
         fragmentTransaction.replace(R.id.container, fragment);
 
         fragmentTransaction.addToBackStack("showfragmentmap");
