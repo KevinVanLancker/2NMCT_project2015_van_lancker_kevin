@@ -1,6 +1,7 @@
 package be.howest.nmct.projectdes;
 
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -23,10 +24,33 @@ import be.howest.nmct.projectdes.loader.LocationLoader;
 public class LocationsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     LocationAdapter la;
+    private OnLocationsFragmentListener listener;
+
+    public interface OnLocationsFragmentListener{
+        void onSelectLocation(String adres, String gemeente, String sport);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try{
+            listener = (OnLocationsFragmentListener) activity;
+        }catch(ClassCastException ex){
+            throw new ClassCastException(activity.toString() + " must implement OnLocationsFragmentListener");
+        }
+    }
+
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+        Cursor c = (Cursor) la.getItem(position);
+        String selectedAdres = c.getString(c.getColumnIndex(Contract.SportLocatieColumns.COLUMN_LOCATIE_ADRES));
+        String selectedGemeente = c.getString(c.getColumnIndex(Contract.SportLocatieColumns.COLUMN_LOCATIE_GEMEENTE));
+        String selectedSport = c.getString(c.getColumnIndex(Contract.SportLocatieColumns.COLUMN_LOCATIE_SPORT));
+        if(listener != null){
+            listener.onSelectLocation(selectedAdres,selectedGemeente,selectedSport);
+        }
     }
 
     @Override

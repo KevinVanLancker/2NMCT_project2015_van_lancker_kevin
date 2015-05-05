@@ -19,7 +19,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import be.howest.nmct.projectdes.Location;
+import be.howest.nmct.projectdes.model.Location;
+import be.howest.nmct.projectdes.provider.LocationProvider;
 
 /**
  * Created by kevin on 03/05/15.
@@ -27,8 +28,6 @@ import be.howest.nmct.projectdes.Location;
 public class LocationLoader extends AsyncTaskLoader<Cursor> {
 
     private Cursor mCursor;
-    private static final String url = "http://data.kortrijk.be/sport/outdoorlocaties.json";
-    private List<Location> locs;
 
 
     private final String[] mColumnNames = new String[]{
@@ -38,71 +37,6 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
             Contract.SportLocatieColumns.COLUMN_LOCATIE_SPORT
     };
 
-    private List<Location> getLocations(){
-        InputStream input = null;
-        JsonReader reader = null;
-        List<Location> locations = new ArrayList<>();
-
-        try {
-            input = new URL(url).openStream();
-            reader = new JsonReader(new InputStreamReader(input, "UTF-8"));
-
-            reader.beginArray();
-            while(reader.hasNext()){
-                reader.beginObject();
-                Location loc = new Location();
-                String lat = "";
-                String lng = "";
-                while(reader.hasNext()) {
-                    String name = reader.nextName();
-                    if (name.equals("benaming")){
-                        loc.benaming = reader.nextString();
-                    }else if(name.equals("adres")){
-                        loc.adres = reader.nextString();
-                    }else if(name.equals("gemeente")){
-                        loc.gemeente = reader.nextString();
-                    }else if(name.equals("soort")){
-                        loc.soort = reader.nextString();
-                    }else if(name.equals("sport")){
-                        loc.sport = reader.nextString();
-                    }else if(name.equals("afmetingen")){
-                        if(reader.peek().equals(JsonToken.NULL)){
-                            reader.skipValue();
-                        }else{
-                            loc.afmeting = reader.nextString();
-                        }
-                    }else if(name.equals("y")){
-                        lat = reader.nextString();
-                    }else if(name.equals("x")){
-                        lng = reader.nextString();
-                    }
-                    else{
-                        reader.skipValue();
-                    }
-                }
-
-                loc.pos = new LatLng(Double.parseDouble(lat),Double.parseDouble(lng));
-                locations.add(loc);
-
-                reader.endObject();
-            }
-            reader.endArray();
-        }    catch(IOException ex){
-            ex.printStackTrace();
-        }finally {
-            try{
-                reader.close();
-            }catch(IOException ex){
-                ex.printStackTrace();
-            }
-            try {
-                input.close();
-            }catch(IOException ex){
-                ex.printStackTrace();
-            }
-        }
-        return locations;
-    }
     private static Object lock = new Object();
 
     public LocationLoader(Context context){
@@ -130,20 +64,10 @@ public class LocationLoader extends AsyncTaskLoader<Cursor> {
     public void loadCursor(){
         synchronized (lock){
             if(mCursor != null) return;
-
-            locs = getLocations();
-            Collections.sort(locs, new Comparator<Location>() {
-                @Override
-                public int compare(Location lhs, Location rhs) {
-                    return lhs.sport.compareTo(rhs.sport);
-                }
-            });
-
-
             MatrixCursor cursor = new MatrixCursor(mColumnNames);
             int id = 1;
 
-            for (Location loc : locs){
+            for (Location loc : LocationProvider.getLocations()){
                 MatrixCursor.RowBuilder row = cursor.newRow();
                 row.add(id);
                 row.add(loc.adres);

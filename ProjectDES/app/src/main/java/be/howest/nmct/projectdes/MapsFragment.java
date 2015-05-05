@@ -27,7 +27,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     LatLng mCurPos;
 
 
-    public static MapsFragment newInstance(){
+    public static MapsFragment newInstance(LatLng cor){
         MapsFragment fragment = new MapsFragment();
         return fragment;
     }
@@ -71,6 +71,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         mGMap = map;
         mGMap.setOnMyLocationChangeListener(this);
         map.setMyLocationEnabled(true);
+        //zet marker op cor met wat basisinfo
 
         }
 
@@ -79,6 +80,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onMyLocationChange(Location loc) {
+        //moet maar 1x gebeuren
         mGMap.clear();
         mCurPos = new LatLng(loc.getLatitude(),loc.getLongitude());
         mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));

@@ -1,15 +1,17 @@
 package be.howest.nmct.projectdes;
 
 
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.app.Activity;
 
+import com.google.android.gms.maps.model.LatLng;
 
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity implements LocationsFragment.OnLocationsFragmentListener, LocationDetailsFragment.OnDetailsFragmentListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,5 +45,29 @@ public class MainActivity extends Activity{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSelectLocation(String adres, String gemeente, String sport) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        LocationDetailsFragment fragment = LocationDetailsFragment.newInstance(adres, gemeente, sport);
+        fragmentTransaction.replace(R.id.container, fragment);
+
+        fragmentTransaction.addToBackStack("showfragmentlocationdetails");
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onClickMap(LatLng cor) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        MapsFragment fragment = MapsFragment.newInstance(cor);
+        fragmentTransaction.replace(R.id.container, fragment);
+
+        fragmentTransaction.addToBackStack("showfragmentmap");
+        fragmentTransaction.commit();
     }
 }

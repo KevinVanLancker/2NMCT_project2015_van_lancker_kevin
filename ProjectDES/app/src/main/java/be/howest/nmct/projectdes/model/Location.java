@@ -1,4 +1,4 @@
-package be.howest.nmct.projectdes;
+package be.howest.nmct.projectdes.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
