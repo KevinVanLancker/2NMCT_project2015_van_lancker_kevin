@@ -68,7 +68,7 @@ public class LocationDetailsFragment extends Fragment {
                 listener.onClickMap(loc.pos);
             }
         });*/
-
+        //test
         tvAdres.setText(getArguments().getString(LOCATIE_ADRES));
 
         /*tvBenaming.setText(loc.benaming);
