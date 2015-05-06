@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Sportrijk</string>
     <string name="action_settings">Settings</string>
-    <string name="soortLocatie">Dit is een </string>
-    <string name="afmetingen">De afmetingen zijn: </string>
     <string name="buttonMap">Klik hier om de locatie op de map te zien</string>
 </resources>

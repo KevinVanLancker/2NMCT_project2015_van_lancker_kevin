@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -25,11 +27,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsFragment extends Fragment implements OnMapReadyCallback/*, GoogleMap.OnMyLocationChangeListener*/{
 
     private MapFragment mMap;
-    /*private GoogleMap mGMap;
-    private LatLng mCurPos;*/
+    /*private GoogleMap mGMap;*/
+    private LatLng mLastPos;
     private static LatLng mLoc;
     private static final String LOCATIE_BENAMING = "be.howest.nmct.projectdes.NEW_LOCATIE_BENAMING";
-
 
 
     public static MapsFragment newInstance(LatLng cor, String benaming){
@@ -45,11 +46,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback/*, Goog
 
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Nullable
     @Override
@@ -80,7 +76,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback/*, Goog
        // mGMap = map;
         //mGMap.setOnMyLocationChangeListener(this);
         map.setMyLocationEnabled(true);
-        //zet marker op cor met wat basisinfo
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(mLoc, 15));
         map.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc));
 

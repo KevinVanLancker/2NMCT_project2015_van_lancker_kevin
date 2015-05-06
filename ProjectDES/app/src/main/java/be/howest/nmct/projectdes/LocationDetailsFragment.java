@@ -5,11 +5,11 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -26,7 +26,7 @@ public class LocationDetailsFragment extends Fragment {
     private static final String LOCATIE_GEMEENTE = "be.howest.nmct.projectdes.NEW_LOCATIE_GEMEENTE";
     private static final String LOCATIE_SPORT = "be.howest.nmct.projectdes.NEW_LOCATIE_SPORT";
     private static Location loc;
-
+    private ProgressBar pbProgress;
     private OnDetailsFragmentListener listener;
 
     public interface OnDetailsFragmentListener {
@@ -69,6 +69,7 @@ public class LocationDetailsFragment extends Fragment {
 
         View v =  inflater.inflate(R.layout.fragment_location_details, container, false);
 
+        pbProgress = (ProgressBar) v.findViewById(R.id.pbProgress);
         btnMap = (Button) v.findViewById(R.id.btnMap);
         tvBenaming = (TextView) v.findViewById(R.id.tvBenaming);
         tvAdres = (TextView) v.findViewById(R.id.tvAdres);
@@ -76,13 +77,13 @@ public class LocationDetailsFragment extends Fragment {
         tvSoort = (TextView) v.findViewById(R.id.tvSoort);
         tvSport = (TextView) v.findViewById(R.id.tvSport);
         tvAfmetingen = (TextView) v.findViewById(R.id.tvAfmetingen);
-        new Longtask().execute();
+        new GetInfo().execute();
 
 
         return v;
     }
 
-    private class Longtask extends AsyncTask<Void,Void,Void>{
+    private class GetInfo extends AsyncTask<Void,Void,Void>{
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -92,12 +93,14 @@ public class LocationDetailsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            pbProgress.setVisibility(View.GONE);
             tvBenaming.setText(loc.benaming);
             tvAdres.setText(loc.adres);
             tvGemeente.setText(loc.gemeente);
             tvSoort.setText("Dit is een " + loc.soort);
             tvSport.setText(loc.sport);
             tvAfmetingen.setText("De afmetingen zijn: " + loc.afmeting);
+            btnMap.setVisibility(View.VISIBLE);
             btnMap.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
