@@ -2,32 +2,55 @@ package be.howest.nmct.projectdes;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 
 
 /**
  * Created by kevin on 18/04/15.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback/*, GoogleMap.OnMyLocationChangeListener*/{
+public class MapsFragment extends Fragment implements OnMapReadyCallback, LocationListener{
 
+    private ProgressDialog pDialog;
     private MapFragment mMap;
-    /*private GoogleMap mGMap;*/
+    private GoogleMap mGMap;
+    private List<LatLng> polyz;
+    private LocationManager mLocationManager;
     private LatLng mLastPos;
     private static LatLng mLoc;
     private static final String LOCATIE_BENAMING = "be.howest.nmct.projectdes.NEW_LOCATIE_BENAMING";
@@ -46,6 +69,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback/*, Goog
 
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+            // Do something with the recent location fix
+            //  otherwise wait for the update below
+            mLastPos = new LatLng(location.getLatitude(),location.getLongitude());
+
+        }
+        else {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        }
+
+    }
 
     @Nullable
     @Override
@@ -54,6 +94,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback/*, Goog
 
         mMap = getMapFragment();
         mMap.getMapAsync(this);
+        new GetDirection().execute();
+
+
 
         return v;
     }
@@ -73,23 +116,140 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback/*, Goog
     @Override
     public void onMapReady(GoogleMap map) {
 
-       // mGMap = map;
-        //mGMap.setOnMyLocationChangeListener(this);
+        mGMap = map;
         map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(mLoc, 15));
-        map.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc));
 
         }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        if(location != null){
+            mLocationManager.removeUpdates(this);
+        }
+    }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
+    }
 
-    /*@Override
-    public void onMyLocationChange(Location loc) {
-        //moet maar 1x gebeuren
-        mGMap.clear();
-        mCurPos = new LatLng(loc.getLatitude(),loc.getLongitude());
-        mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurPos,15));
-    }*/
+    @Override
+    public void onProviderEnabled(String provider) {
 
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    class GetDirection extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d("woops", mLastPos.toString());
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Loading route. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            String stringUrl = "http://maps.googleapis.com/maps/api/directions/json?origin=" + mLastPos.latitude +"," + mLastPos.longitude + "&destination=" + mLoc.latitude + "," + mLoc.longitude + "&sensor=false";
+            StringBuilder response = new StringBuilder();
+            try {
+                URL url = new URL(stringUrl);
+                HttpURLConnection httpconn = (HttpURLConnection) url
+                        .openConnection();
+                if (httpconn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    BufferedReader input = new BufferedReader(
+                            new InputStreamReader(httpconn.getInputStream()),
+                            8192);
+                    String strLine = null;
+
+                    while ((strLine = input.readLine()) != null) {
+                        response.append(strLine);
+                    }
+                    input.close();
+                }
+
+                String jsonOutput = response.toString();
+
+                JSONObject jsonObject = new JSONObject(jsonOutput);
+
+                // routesArray contains ALL routes
+                JSONArray routesArray = jsonObject.getJSONArray("routes");
+                // Grab the first route
+                JSONObject route = routesArray.getJSONObject(0);
+
+                JSONObject poly = route.getJSONObject("overview_polyline");
+                String polyline = poly.getString("points");
+                polyz = decodePoly(polyline);
+
+            } catch (Exception e) {
+
+            }
+
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            for (int i = 0; i < polyz.size() - 1; i++) {
+                LatLng src = polyz.get(i);
+                LatLng dest = polyz.get(i + 1);
+                Polyline line = mGMap.addPolyline(new PolylineOptions()
+                        .add(new LatLng(src.latitude, src.longitude),
+                                new LatLng(dest.latitude,                dest.longitude))
+                        .width(2).color(Color.RED).geodesic(true));
+
+            }
+            pDialog.dismiss();
+            mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLoc, 15));
+            mGMap.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc));
+            mGMap.addMarker(new MarkerOptions().title("Huidige positie").position(mLastPos));
+
+        }
+    }
+
+    /* Method to decode polyline points */
+    private List<LatLng> decodePoly(String encoded) {
+
+        List<LatLng> poly = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+        }
+
+        return poly;
+    }
 }
