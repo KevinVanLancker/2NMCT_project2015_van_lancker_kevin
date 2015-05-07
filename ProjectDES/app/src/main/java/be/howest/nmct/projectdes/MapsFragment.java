@@ -75,7 +75,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
 
         Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+        if(location != null) {
             // Do something with the recent location fix
             //  otherwise wait for the update below
             mLastPos = new LatLng(location.getLatitude(),location.getLongitude());
@@ -206,8 +206,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                 LatLng dest = polyz.get(i + 1);
                 Polyline line = mGMap.addPolyline(new PolylineOptions()
                         .add(new LatLng(src.latitude, src.longitude),
-                                new LatLng(dest.latitude,                dest.longitude))
-                        .width(2).color(Color.RED).geodesic(true));
+                                new LatLng(dest.latitude,dest.longitude))
+                        .width(7).color(Color.RED).geodesic(true));
 
             }
             pDialog.dismiss();
