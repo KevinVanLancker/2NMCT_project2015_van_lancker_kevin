@@ -16,9 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -36,6 +33,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -54,6 +52,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     private LatLng mLastPos;
     private static LatLng mLoc;
     private static final String LOCATIE_BENAMING = "be.howest.nmct.projectdes.NEW_LOCATIE_BENAMING";
+    private final LatLng KORTRIJK = new LatLng(50.83053,3.2644599999999855);
 
 
     public static MapsFragment newInstance(LatLng cor, String benaming){
@@ -71,34 +70,61 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setRetainInstance(true);
         super.onCreate(savedInstanceState);
-        mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+    }
 
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if(location != null) {
-            // Do something with the recent location fix
-            //  otherwise wait for the update below
-            mLastPos = new LatLng(location.getLatitude(),location.getLongitude());
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        try {
+
+            if (mMap != null) {
+                removeMapFragment();
+            }
+        } catch (IllegalStateException e) {
 
         }
-        else {
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-        }
-
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_maps,container,false);
 
+        View v = inflater.inflate(R.layout.fragment_maps,container,false);
         mMap = getMapFragment();
         mMap.getMapAsync(this);
+        getCurrentPosition();
         new GetDirection().execute();
 
-
-
         return v;
+    }
+
+    private void getCurrentPosition(){
+        mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        if(location != null && location.getTime() < Calendar.getInstance().getTimeInMillis() - 3 * 60 * 1000 ) {
+
+                // Do something with the recent location fix
+                //  otherwise wait for the update below
+
+                mLastPos = new LatLng(location.getLatitude(), location.getLongitude());
+        }
+
+    }
+
+    private void removeMapFragment(){
+        FragmentManager fm;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+
+            fm = getFragmentManager();
+        } else {
+
+            fm = getChildFragmentManager();
+        }
+        fm.beginTransaction().remove(mMap).commit();
     }
 
     private MapFragment getMapFragment() {
@@ -126,6 +152,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         if(location != null){
             mLocationManager.removeUpdates(this);
         }
+        else{
+            mLastPos = new LatLng(location.getLatitude(),location.getLongitude());
+        }
     }
 
     @Override
@@ -148,7 +177,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Log.d("woops", mLastPos.toString());
             pDialog = new ProgressDialog(getActivity());
             pDialog.setMessage("Loading route. Please wait...");
             pDialog.setIndeterminate(false);
@@ -158,6 +186,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
         @Override
         protected Void doInBackground(Void... params) {
+
+
+            while(mLastPos == null) {
+                getCurrentPosition();
+            }
 
             String stringUrl = "http://maps.googleapis.com/maps/api/directions/json?origin=" + mLastPos.latitude +"," + mLastPos.longitude + "&destination=" + mLoc.latitude + "," + mLoc.longitude + "&sensor=false";
             StringBuilder response = new StringBuilder();
@@ -210,10 +243,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                         .width(7).color(Color.RED).geodesic(true));
 
             }
-            pDialog.dismiss();
-            mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLoc, 15));
-            mGMap.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc));
+
+            mGMap.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc)).showInfoWindow();
             mGMap.addMarker(new MarkerOptions().title("Huidige positie").position(mLastPos));
+            mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(KORTRIJK, 13));
+            pDialog.dismiss();
 
         }
     }
