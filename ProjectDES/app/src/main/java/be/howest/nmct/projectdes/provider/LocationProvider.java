@@ -100,7 +100,7 @@ public class LocationProvider {
         Collections.sort(locations, new Comparator<Location>() {
             @Override
             public int compare(Location lhs, Location rhs) {
-                return lhs.sport.compareTo(rhs.sport);
+                return lhs.sport.toLowerCase().compareTo(rhs.sport.toLowerCase());
             }
         });
 

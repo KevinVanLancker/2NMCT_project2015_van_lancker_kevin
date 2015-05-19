@@ -21,9 +21,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,7 +52,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     private LatLng mLastPos;
     private static LatLng mLoc;
     private static final String LOCATIE_BENAMING = "be.howest.nmct.projectdes.NEW_LOCATIE_BENAMING";
-    private final LatLng KORTRIJK = new LatLng(50.83053,3.2644599999999855);
 
 
     public static MapsFragment newInstance(LatLng cor, String benaming){
@@ -102,14 +101,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
     private void getCurrentPosition(){
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
-
         Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         if(location != null && location.getTime() < Calendar.getInstance().getTimeInMillis() - 3 * 60 * 1000 ) {
-
-                // Do something with the recent location fix
-                //  otherwise wait for the update below
-
                 mLastPos = new LatLng(location.getLatitude(), location.getLongitude());
         }
 
@@ -178,7 +172,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Loading route. Please wait...");
+            pDialog.setMessage("Laden van traject. Even geduld...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
@@ -186,12 +180,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
         @Override
         protected Void doInBackground(Void... params) {
-
-
             while(mLastPos == null) {
                 getCurrentPosition();
             }
-
             String stringUrl = "http://maps.googleapis.com/maps/api/directions/json?origin=" + mLastPos.latitude +"," + mLastPos.longitude + "&destination=" + mLoc.latitude + "," + mLoc.longitude + "&sensor=false";
             StringBuilder response = new StringBuilder();
             try {
@@ -209,16 +200,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                     }
                     input.close();
                 }
-
                 String jsonOutput = response.toString();
-
                 JSONObject jsonObject = new JSONObject(jsonOutput);
-
                 // routesArray contains ALL routes
                 JSONArray routesArray = jsonObject.getJSONArray("routes");
                 // Grab the first route
                 JSONObject route = routesArray.getJSONObject(0);
-
                 JSONObject poly = route.getJSONObject("overview_polyline");
                 String polyline = poly.getString("points");
                 polyz = decodePoly(polyline);
@@ -226,33 +213,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             } catch (Exception e) {
 
             }
-
             return null;
-
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
             for (int i = 0; i < polyz.size() - 1; i++) {
                 LatLng src = polyz.get(i);
                 LatLng dest = polyz.get(i + 1);
-                Polyline line = mGMap.addPolyline(new PolylineOptions()
+                mGMap.addPolyline(new PolylineOptions()
                         .add(new LatLng(src.latitude, src.longitude),
                                 new LatLng(dest.latitude,dest.longitude))
                         .width(7).color(Color.RED).geodesic(true));
 
             }
-
             mGMap.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc)).showInfoWindow();
-            mGMap.addMarker(new MarkerOptions().title("Huidige positie").position(mLastPos));
-            mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(KORTRIJK, 13));
+            mGMap.addMarker(new MarkerOptions().title("Huidige positie").position(mLastPos).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLoc, 13));
             pDialog.dismiss();
-
         }
     }
 
-    /* Method to decode polyline points */
     private List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<>();
