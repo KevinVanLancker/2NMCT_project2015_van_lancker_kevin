@@ -225,7 +225,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                         .add(new LatLng(src.latitude, src.longitude),
                                 new LatLng(dest.latitude,dest.longitude))
                         .width(7).color(Color.RED).geodesic(true));
-
             }
             mGMap.addMarker(new MarkerOptions().title(getArguments().getString(LOCATIE_BENAMING)).position(mLoc)).showInfoWindow();
             mGMap.addMarker(new MarkerOptions().title("Huidige positie").position(mLastPos).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));

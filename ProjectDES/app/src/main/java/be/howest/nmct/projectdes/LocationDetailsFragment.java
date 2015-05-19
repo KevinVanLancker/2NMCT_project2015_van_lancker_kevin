@@ -21,7 +21,7 @@ import be.howest.nmct.projectdes.provider.LocationProvider;
 public class LocationDetailsFragment extends Fragment {
 
     private Button btnMap;
-    private TextView tvBenaming, tvAdres, tvGemeente, tvSoort, tvSport, tvAfmetingen;
+    private TextView tvBenaming, tvAdres, tvGemeente, tvSoort, tvSport, tvAfmetingen, tvAdresInfo, tvInfo;
     private static final String LOCATIE_ADRES = "be.howest.nmct.projectdes.NEW_LOCATIE_ADRES";
     private static final String LOCATIE_GEMEENTE = "be.howest.nmct.projectdes.NEW_LOCATIE_GEMEENTE";
     private static final String LOCATIE_SPORT = "be.howest.nmct.projectdes.NEW_LOCATIE_SPORT";
@@ -77,6 +77,8 @@ public class LocationDetailsFragment extends Fragment {
         tvSoort = (TextView) v.findViewById(R.id.tvSoort);
         tvSport = (TextView) v.findViewById(R.id.tvSport);
         tvAfmetingen = (TextView) v.findViewById(R.id.tvAfmetingen);
+        tvAdresInfo = (TextView) v.findViewById(R.id.tvAdresInfo);
+        tvInfo = (TextView) v.findViewById(R.id.tvInfo);
         new GetInfo().execute();
 
 
@@ -100,6 +102,8 @@ public class LocationDetailsFragment extends Fragment {
             tvSoort.setText("Dit is een " + loc.soort);
             tvSport.setText(loc.sport);
             tvAfmetingen.setText("De afmetingen zijn: " + loc.afmeting);
+            tvInfo.setVisibility(View.VISIBLE);
+            tvAdresInfo.setVisibility(View.VISIBLE);
             btnMap.setVisibility(View.VISIBLE);
             btnMap.setOnClickListener(new View.OnClickListener() {
                 @Override

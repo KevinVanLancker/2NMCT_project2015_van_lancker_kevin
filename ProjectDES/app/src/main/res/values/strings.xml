@@ -2,4 +2,6 @@
     <string name="app_name">Sportrijk</string>
     <string name="action_settings">Settings</string>
     <string name="buttonMap">Klik hier om de locatie op de map te zien</string>
+    <string name="adres">Adres:</string>
+    <string name="informatie">Informatie:</string>
 </resources>
