@@ -4,6 +4,8 @@ package be.howest.nmct.projectdes;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,9 +21,15 @@ public class MainActivity extends Activity implements LocationsFragment.OnLocati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WifiManager wifi;
-        wifi=(WifiManager) getSystemService(Context.WIFI_SERVICE);
-        wifi.setWifiEnabled(true);
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (!mWifi.isConnected()) {
+            WifiManager wifi;
+            wifi=(WifiManager) getSystemService(Context.WIFI_SERVICE);
+            wifi.setWifiEnabled(true);
+        }
+
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

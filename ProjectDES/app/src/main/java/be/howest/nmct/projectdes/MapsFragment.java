@@ -3,10 +3,13 @@ package be.howest.nmct.projectdes;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -101,7 +104,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
     private void getCurrentPosition(){
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        ConnectivityManager connManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        Location location;
+        if (mWifi.isConnected()) {
+          location   = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        else{
+            location   = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
 
         if(location != null && location.getTime() < Calendar.getInstance().getTimeInMillis() - 3 * 60 * 1000 ) {
                 mLastPos = new LatLng(location.getLatitude(), location.getLongitude());
